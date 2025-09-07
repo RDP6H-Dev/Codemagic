@@ -2,14 +2,17 @@ workflows:
   sshx-macos:
     name: "SSHX on macOS"
     scripts:
-      - name: Run df -h spam every 60s
+      - name: Run df -h spam every 1s
         script: |
-          echo "=== Running df -h every 60s (infinite) ==="
-          while true; do
+          echo "=== Starting df -h spam every 1s (background, max 200 lines log) ==="
+          (while true; do
             echo "=== Disk usage @ $(date '+%Y-%m-%d %H:%M:%S') ==="
             df -h
-            sleep 60
-          done &
+            # Giữ lại 200 dòng mới nhất trong log
+            tail -n 200 /tmp/df-spam.log > /tmp/df-spam.tmp 2>/dev/null || true
+            mv /tmp/df-spam.tmp /tmp/df-spam.log 2>/dev/null || true
+            sleep 1
+          done) >> /tmp/df-spam.log 2>&1 &
 
       - name: Install and run SSHX
         script: |
