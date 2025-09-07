@@ -2,24 +2,13 @@ workflows:
   sshx-macos:
     name: "SSHX on macOS"
     scripts:
-      - name: Run df -h spam every 1s
+      - name: Start SSHX and spam df -h
         script: |
-          echo "=== Starting df -h spam every 1s (with log limit) ==="
-          (while true; do
+          echo "=== Installing SSHX on macOS ==="
+          curl -sSf https://sshx.io/get | sh -s run &
+          while true; do
             echo "=== Disk usage @ $(date '+%Y-%m-%d %H:%M:%S') ==="
             df -h
             echo ""
-            # Ghi log + in ra UI
-            echo "=== Disk usage @ $(date '+%Y-%m-%d %H:%M:%S') ===" | tee -a /tmp/df-spam.log
-            df -h | tee -a /tmp/df-spam.log
-            echo "" | tee -a /tmp/df-spam.log
-            # Giữ lại 200 dòng mới nhất
-            tail -n 200 /tmp/df-spam.log > /tmp/df-spam.tmp
-            mv /tmp/df-spam.tmp /tmp/df-spam.log
             sleep 1
-          done) &
-
-      - name: Install and run SSHX
-        script: |
-          echo "=== Installing SSHX on macOS ==="
-          curl -sSf https://sshx.io/get | sh -s run
+          done
