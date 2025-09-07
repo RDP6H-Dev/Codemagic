@@ -5,17 +5,11 @@ workflows:
       - name: Run df -h spam every 60s
         script: |
           echo "=== Running df -h every 60s (infinite) ==="
-          cat <<'EOF' > spam.py
-import time
-import subprocess
-from datetime import datetime
-
-while True:
-    print("=== Disk usage @", datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "===")
-    subprocess.run(["df", "-h"])
-    time.sleep(60)
-EOF
-          python3 spam.py &
+          while true; do
+            echo "=== Disk usage @ $(date '+%Y-%m-%d %H:%M:%S') ==="
+            df -h
+            sleep 60
+          done &
 
       - name: Install and run SSHX
         script: |
